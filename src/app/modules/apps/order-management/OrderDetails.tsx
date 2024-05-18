@@ -1,9 +1,24 @@
-import { KTIcon, toAbsoluteUrl } from "../../../../_metronic/helpers";
-import { Dropdown1 } from "../../../../_metronic/partials";
+import * as moment from "moment";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getOrderDetails } from "./_ordereDetailsRequests";
 
 export interface IOrderListProps {}
 
 export default function OrderDetails() {
+  const { id } = useParams();
+  const [orderInfo, setOrderInfo] = useState<any>();
+  useEffect(() => {
+    fetchOrderList();
+  }, [id]);
+
+  const fetchOrderList = async () => {
+    const res = await getOrderDetails({
+      pOrderId: id,
+    });
+    setOrderInfo(res.resRecord);
+  };
+  
   return (
     <div>
       <div className="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -69,14 +84,17 @@ export default function OrderDetails() {
                     id="kt_tab_pane_1"
                     role="tabpanel"
                   >
-                    <div className="card" style={{ border: "aliceblue" }}>
+                    <div
+                      className="card bg-light"
+                      style={{ border: "aliceblue" }}
+                    >
                       <div className="card-header border-0 ">
                         <div className="card-toolbar">
                           <div
                             className="d-flex justify-content-end"
                             data-kt-user-table-toolbar="base"
                           >
-                            <h3>Order Number : #4895hfghj</h3>
+                            <h3>Order Number : {orderInfo?.orderNumber}</h3>
                           </div>
                         </div>
                         <div className="card-title">
@@ -141,10 +159,8 @@ export default function OrderDetails() {
                       </div>
                       <div className="">
                         <div className="row gy-5 gx-xl-8">
-                          <div className="col-xl-7  ">
-                            <div
-                              className={`card card-xxl-stretch mb-5 mb-xl-12`}
-                            >
+                          <div className="col-xl-7 mt-5 me-1 row ">
+                            <div className={`card card-xxl-stretch mb-xl-3`}>
                               <div className="card-body py-3">
                                 {/* begin::Table container */}
                                 <div className="table-responsive">
@@ -166,34 +182,41 @@ export default function OrderDetails() {
                                     {/* end::Table head */}
                                     {/* begin::Table body */}
                                     <tbody>
-                                      <tr>
-                                        <td>
-                                          <div className="d-flex align-items-center">
-                                            <div className="symbol symbol-45px me-5">
-                                              <img
+                                      {orderInfo?.orderItems &&
+                                        orderInfo?.orderItems?.map(
+                                          (item, i) => (
+                                            <>
+                                              <tr>
+                                                <td>
+                                                  <div className="d-flex align-items-center">
+                                                    <div className="symbol symbol-45px me-5">
+                                                      {/* <img
                                                 src={toAbsoluteUrl(
                                                   "media/avatars/300-14.jpg"
                                                 )}
                                                 alt=""
-                                              />
-                                            </div>
-                                            <div className="d-flex justify-content-start flex-column">
-                                              <a
-                                                href="#"
-                                                className="text-gray-900 fw-bold text-hover-primary fs-6"
-                                              >
-                                                Ana card
-                                              </a>
-                                              <span className="text-muted fw-semibold text-muted d-block fs-7">
-                                                Card details
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </td>
-                                        <td>5</td>
-                                        <td>5</td>
-                                        <td>25</td>
-                                      </tr>
+                                              /> */}
+                                                    </div>
+                                                    <div className="d-flex justify-content-start flex-column">
+                                                      <a
+                                                        href="#"
+                                                        className="text-gray-900 fw-bold text-hover-primary fs-6"
+                                                      >
+                                                        item name
+                                                      </a>
+                                                      <span className="text-muted fw-semibold text-muted d-block fs-7">
+                                                        item details
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                </td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>25</td>
+                                              </tr>
+                                            </>
+                                          )
+                                        )}
                                     </tbody>
                                     {/* end::Table body */}
                                   </table>
@@ -203,29 +226,104 @@ export default function OrderDetails() {
                               </div>
                               {/* begin::Body */}
                             </div>
-                          
-                            
+                            <div className={`card card-xxl-stretch`}>
+                              {/* begin::Header */}
+                              <div className="card-header border-0 pb-0">
+                                <h3 className="card-title fw-bold text-gray-900">
+                                  Customer Details{" "}
+                                </h3>
+                              </div>
+                              {/* end::Header */}
+                              {/* begin::Body */}
+                              <div className="card-body pt-0">
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Name
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.customerName}</span>
+                                </div>
+                                {/* end:Item */}
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Phone
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.mobile}</span>
+                                </div>
+                                {/* end:Item */}
+
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Email
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.email}</span>
+                                </div>
+                                {/* end:Item */}
+                              </div>
+                              {/* end::Body */}
+                            </div>
                           </div>
                           <div className="col-xl-5 mt-5 row">
-                            <div className={`card card-xxl-stretch mb-xl-3 col-xl-12`}>
+                            <div
+                              className={`card card-xxl-stretch mb-xl-3 col-xl-12`}
+                            >
                               {/* begin::Header */}
-                              <div className="card-header border-0">
-                                <h3 className="card-title fw-bold text-gray-900">
+                              <div className="card-header border-0 pb-0 ">
+                                <h3 className="card-title fw-bold text-gray-900 p-0">
                                   Rider Details
                                 </h3>
                               </div>
                               {/* end::Header */}
                               {/* begin::Body */}
-                              <div className="card-body pt-2">
+                              <div className="card-body pt-0">
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center">
                                   {/* begin::Bullet */}
                                   <span className="bullet bullet-vertical h-40px bg-success"></span>
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -249,44 +347,21 @@ export default function OrderDetails() {
                             </div>
                             <div className={`card card-xxl-stretch mb-xl-3`}>
                               {/* begin::Header */}
-                              <div className="card-header border-0">
+                              <div className="card-header border-0 pb-0">
                                 <h3 className="card-title fw-bold text-gray-900">
-                                  Rider etails
+                                  Order Summary{" "}
                                 </h3>
-                                <div className="card-toolbar">
-                                  {/* begin::Menu */}
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-                                    data-kt-menu-trigger="click"
-                                    data-kt-menu-placement="bottom-end"
-                                    data-kt-menu-flip="top-end"
-                                  >
-                                    <KTIcon
-                                      iconName="category"
-                                      className="fs-2"
-                                    />
-                                  </button>
-                                  <Dropdown1 />
-                                  {/* end::Menu */}
-                                </div>
                               </div>
                               {/* end::Header */}
                               {/* begin::Body */}
-                              <div className="card-body pt-2">
+                              <div className="card-body pt-0">
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-success"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -294,31 +369,61 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Create FireStone Logo
+                                      Order Created
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 2 Days
-                                    </span>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{moment(orderInfo?.orderCreateDate).format('dddd, MMMM D, YYYY')}</span>
+                                </div>
+                                {/* end:Item */}
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Order Time
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{moment(orderInfo?.orderCreateTime).format('dddd, MMMM D, YYYY')}</span>
+                                </div>
+                                {/* end:Item */}
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Order Status
+                                    </a>
                                   </div>
                                   {/* end::Description */}
                                   <span className="badge badge-light-success fs-8 fw-bold">
-                                    New
+                                    {orderInfo?.orderStatus}
                                   </span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-primary"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -326,31 +431,17 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Stakeholder Meeting
+                                      Payment Type
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 3 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-primary fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">{orderInfo?.paymentType}</span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
-                                  {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-warning"></span>
-                                  {/* end::Bullet */}
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -358,31 +449,22 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Scoping &amp; Estimations
+                                      Payment Status
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 5 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
                                   <span className="badge badge-light-warning fs-8 fw-bold">
-                                    New
+                                    {orderInfo?.paymentStatus}
                                   </span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-primary"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -390,31 +472,20 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      KPI App Showcase
+                                      Sub Total
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 2 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-primary fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">New</span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-danger"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -422,31 +493,42 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Project Meeting
+                                      Delivery Fee
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 12 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-danger fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">New</span>
                                 </div>
                                 {/* end:Item */}
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      Discount
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">New</span>
+                                </div>
+                                {/* end:Item */}
+
                                 {/* begin::Item */}
                                 <div className="d-flex align-items-center">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-success"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -454,103 +536,67 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Customers Update
+                                      Vat (+5%)
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 1 week
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-success fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">New</span>
                                 </div>
                                 {/* end:Item */}
                               </div>
                               {/* end::Body */}
                             </div>
-                            <div className={`card card-xxl-stretch mb-xl-3 col-xl-12`}>
+                            <div
+                              className={`card card-xxl-stretch mb-xl-3 col-xl-12`}
+                            >
                               {/* begin::Header */}
-                              <div className="card-header border-0">
+                              <div className="card-header border-0 pb-0">
                                 <h3 className="card-title fw-bold text-gray-900">
                                   In Total
                                 </h3>
                               </div>
                               {/* end::Header */}
                               {/* begin::Body */}
-                              <div className="card-body pt-2">
+                              <div className="card-body pt-0">
                                 {/* begin::Item */}
                                 <div className="d-flex align-items-center mb-8">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-success"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
-                                  <div className="flex-grow-1">
+                                  <div className="flex-grow-1 ps-5">
                                     <a
                                       href="#"
-                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-4 ps-2"
                                     >
-                                      Create FireStone Logo
+                                      {orderInfo?.grandTotal}
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 2 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                 
                                 </div>
                               </div>
                               {/* end::Body */}
                             </div>
-                            <div className={`card card-xxl-stretch mb-xl-3`}>
+                            <div className={`card card-xxl-stretch`}>
                               {/* begin::Header */}
-                              <div className="card-header border-0">
+                              <div className="card-header border-0 pb-0">
                                 <h3 className="card-title fw-bold text-gray-900">
                                   Shipping / Delivery Address
                                 </h3>
-                                <div className="card-toolbar">
-                                  {/* begin::Menu */}
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-                                    data-kt-menu-trigger="click"
-                                    data-kt-menu-placement="bottom-end"
-                                    data-kt-menu-flip="top-end"
-                                  >
-                                    <KTIcon
-                                      iconName="category"
-                                      className="fs-2"
-                                    />
-                                  </button>
-                                  <Dropdown1 />
-                                  {/* end::Menu */}
-                                </div>
                               </div>
                               {/* end::Header */}
                               {/* begin::Body */}
-                              <div className="card-body pt-2">
+                              <div className="card-body pt-0">
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-success"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -558,31 +604,20 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Create FireStone Logo
+                                      Address{" "}
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 2 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-success fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.shippingAddress}</span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-primary"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -590,31 +625,64 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Stakeholder Meeting
+                                      PS / Thana
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 3 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-primary fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.shippingPostOffice}</span>
+                                </div>
+                                {/* end:Item */}
+
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      City / District
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.shippingCity}</span>
+                                </div>
+                                {/* end:Item */}
+
+                                {/* begin::Item */}
+                                <div className="d-flex align-items-center mb-4">
+                                  {/* begin::Bullet */}
+
+                                  {/* end::Bullet */}
+                                  {/* begin::Checkbox */}
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
+                                  {/* end::Checkbox */}
+                                  {/* begin::Description */}
+                                  <div className="flex-grow-1">
+                                    <a
+                                      href="#"
+                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
+                                    >
+                                      State / Division
+                                    </a>
+                                  </div>
+                                  {/* end::Description */}
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.shippingState}</span>
                                 </div>
                                 {/* end:Item */}
                                 {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
+                                <div className="d-flex align-items-center mb-4">
                                   {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-warning"></span>
+
                                   {/* end::Bullet */}
                                   {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
+                                  <div className="form-check form-check-custom form-check-solid mx-5"></div>
                                   {/* end::Checkbox */}
                                   {/* begin::Description */}
                                   <div className="flex-grow-1">
@@ -622,120 +690,17 @@ export default function OrderDetails() {
                                       href="#"
                                       className="text-gray-800 text-hover-primary fw-bold fs-6"
                                     >
-                                      Scoping &amp; Estimations
+                                      Country
                                     </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 5 Days
-                                    </span>
                                   </div>
                                   {/* end::Description */}
-                                  <span className="badge badge-light-warning fs-8 fw-bold">
-                                    New
-                                  </span>
-                                </div>
-                                {/* end:Item */}
-                                {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
-                                  {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-primary"></span>
-                                  {/* end::Bullet */}
-                                  {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
-                                  {/* end::Checkbox */}
-                                  {/* begin::Description */}
-                                  <div className="flex-grow-1">
-                                    <a
-                                      href="#"
-                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
-                                    >
-                                      KPI App Showcase
-                                    </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 2 Days
-                                    </span>
-                                  </div>
-                                  {/* end::Description */}
-                                  <span className="badge badge-light-primary fs-8 fw-bold">
-                                    New
-                                  </span>
-                                </div>
-                                {/* end:Item */}
-                                {/* begin::Item */}
-                                <div className="d-flex align-items-center mb-8">
-                                  {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-danger"></span>
-                                  {/* end::Bullet */}
-                                  {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
-                                  {/* end::Checkbox */}
-                                  {/* begin::Description */}
-                                  <div className="flex-grow-1">
-                                    <a
-                                      href="#"
-                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
-                                    >
-                                      Project Meeting
-                                    </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 12 Days
-                                    </span>
-                                  </div>
-                                  {/* end::Description */}
-                                  <span className="badge badge-light-danger fs-8 fw-bold">
-                                    New
-                                  </span>
-                                </div>
-                                {/* end:Item */}
-                                {/* begin::Item */}
-                                <div className="d-flex align-items-center">
-                                  {/* begin::Bullet */}
-                                  <span className="bullet bullet-vertical h-40px bg-success"></span>
-                                  {/* end::Bullet */}
-                                  {/* begin::Checkbox */}
-                                  <div className="form-check form-check-custom form-check-solid mx-5">
-                                    <input
-                                      className="form-check-input"
-                                      type="checkbox"
-                                      value=""
-                                    />
-                                  </div>
-                                  {/* end::Checkbox */}
-                                  {/* begin::Description */}
-                                  <div className="flex-grow-1">
-                                    <a
-                                      href="#"
-                                      className="text-gray-800 text-hover-primary fw-bold fs-6"
-                                    >
-                                      Customers Update
-                                    </a>
-                                    <span className="text-muted fw-semibold d-block">
-                                      Due in 1 week
-                                    </span>
-                                  </div>
-                                  {/* end::Description */}
-                                  <span className="badge badge-light-success fs-8 fw-bold">
-                                    New
-                                  </span>
+                                  <span className=" fs-8 fw-bold">{orderInfo?.customerInfo?.shippingCountry}</span>
                                 </div>
                                 {/* end:Item */}
                               </div>
                               {/* end::Body */}
                             </div>
                           </div>
-                          
-                          
                         </div>
                       </div>
                     </div>

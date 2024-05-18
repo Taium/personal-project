@@ -34,7 +34,7 @@ const OrderPage = () => {
       </Route>
       <Route element={<Outlet />}>
         <Route
-          path='orders/1'
+          path='orders/:id'
           element={
             <>
               <PageTitle breadcrumbs={ordersBreadcrumbs}>Orders Details</PageTitle>

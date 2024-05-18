@@ -1,17 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { KTIcon } from "../../../../_metronic/helpers";
+import { formatDate } from "../../utils/dateFormat";
+import Pagination from "../../widgets/components/Pagination";
+import { getOrderList } from "./_ordereDetailsRequests";
 
-export interface IOrderListProps {
-
-}
+export interface IOrderListProps {}
 
 export default function OrderList() {
   const [activeTab, setActiveTab] = useState("all");
-
+  const [orderList, setOrderList] = useState<any>();
+  const [pageCount, setPageCount] = useState<number>(5); // Update the type to number
+  const navigate = useNavigate()
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setpage] = useState<number>(0);
   // Function to handle tab clicks
-  const handleTabClick = (tab) => {
+  const handleTabClick = (tab: any) => {
     setActiveTab(tab);
   };
+  useEffect(() => {
+    fetchOrderList();
+  }, []);
+
+  const fetchOrderList = async () => {
+    const res = await getOrderList({
+      size: limit,
+      page,
+      sortBy: "id",
+      sortOn: "ASC",
+    });
+    setOrderList(res.resRecords);
+    console.log(res);
+    setPageCount(res?.pageDetails?.page);
+  };
+  const handleView =(order:any) => {
+    navigate(`/apps/order-management/orders/${order.orderId}`)
+  }
   return (
     <div>
       <div className="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -76,7 +100,9 @@ export default function OrderList() {
                     <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "all" ? "active text-primary" : "text-dark"
+                          activeTab === "all"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("all")}
                       >
@@ -86,62 +112,81 @@ export default function OrderList() {
                     <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "placed" ? "active text-primary" : "text-dark"
+                          activeTab === "placed"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("placed")}
                       >
-                       Order Placed 
+                        Order Placed
                       </button>
                     </li>
                     <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "confirmed" ? "active text-primary" : "text-dark"
+                          activeTab === "confirmed"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("confirmed")}
                       >
                         Order Confirmed
                       </button>
-                    </li><li className="nav-item">
+                    </li>
+                    <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "processing" ? "active text-primary" : "text-dark"
+                          activeTab === "processing"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("processing")}
                       >
                         Order Processing
                       </button>
-                    </li><li className="nav-item">
+                    </li>
+                    <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "sipped" ? "active text-primary" : "text-dark"
+                          activeTab === "sipped"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("sipped")}
                       >
                         Shipped
                       </button>
-                    </li><li className="nav-item">
+                    </li>
+                    <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "delivered" ? "active text-primary" : "text-dark"
+                          activeTab === "delivered"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("delivered")}
                       >
                         Delivered
                       </button>
-                    </li><li className="nav-item">
+                    </li>
+                    <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "canceled" ? "active text-primary" : "text-dark"
+                          activeTab === "canceled"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("canceled")}
                       >
                         Canceled
                       </button>
-                    </li><li className="nav-item">
+                    </li>
+                    <li className="nav-item">
                       <button
                         className={`nav-link ${
-                          activeTab === "returned" ? "active text-primary" : "text-dark"
+                          activeTab === "returned"
+                            ? "active text-primary"
+                            : "text-dark"
                         }  rounded-1`}
                         onClick={() => handleTabClick("returned")}
                       >
@@ -149,9 +194,7 @@ export default function OrderList() {
                       </button>
                     </li>
                   </ul>
-                 
                 </div>
-              
                 <div className="tab-content" id="myTabContent">
                   <div
                     className="tab-pane fade show active"
@@ -245,7 +288,7 @@ export default function OrderList() {
                                 <th className="min-w-150px">Date</th>
                                 <th className="min-w-140px">Order Number</th>
                                 <th className="min-w-120px">Customer</th>
-                                
+
                                 <th className="min-w-120px">Order Status</th>
                                 <th className="min-w-100px text-end">
                                   Actions
@@ -255,84 +298,99 @@ export default function OrderList() {
                             {/* end::Table head */}
                             {/* begin::Table body */}
                             <tbody>
-                              <tr>
-                                <td>
-                                  <div className="form-check form-check-sm form-check-custom form-check-solid">
-                                    <input
-                                      className="form-check-input widget-13-check"
-                                      type="checkbox"
-                                      value="1"
-                                    />
-                                  </div>
-                                </td>
-                                <td>
-                                  <a
-                                    href="#"
-                                    className="text-gray-900 fw-bold text-hover-primary fs-6"
-                                  >
-                                    16-jun-2024
-                                  </a>
-                                </td>
-                                <td>
-                                  <a
-                                    href="#"
-                                    className="text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6"
-                                  >
-                                    BB-001-56
-                                  </a>
-                                  
-                                </td>
-                                <td>
-                                  <a
-                                    href="#"
-                                    className="text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6"
-                                  >
-                                    MD. Abdullah
-                                  </a>
-                                  <span className="text-muted fw-semibold text-muted d-block fs-7">
-                                    Phone: 0192345678
-                                  </span>
-                                </td>
-                               
-                               
-                                <td>
-                                  <span className="badge badge-light-success">
-                                    Approved
-                                  </span>
-                                </td>
-                                <td className="text-end">
-                                  <a
-                                    href="#"
-                                    className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-                                  >
-                                    <KTIcon
-                                      iconName="switch"
-                                      className="fs-3"
-                                    />
-                                  </a>
-                                  <a
-                                    href="#"
-                                    className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-                                  >
-                                    <KTIcon
-                                      iconName="pencil"
-                                      className="fs-3"
-                                    />
-                                  </a>
-                                  <a
-                                    href="#"
-                                    className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-                                  >
-                                    <KTIcon iconName="trash" className="fs-3" />
-                                  </a>
-                                </td>
-                              </tr>
-                              
+                              {orderList &&
+                                orderList?.map((item, i) => (
+                                  <>
+                                    {" "}
+                                    <tr>
+                                      <td>
+                                        <div className="form-check form-check-sm form-check-custom form-check-solid">
+                                          <input
+                                            className="form-check-input widget-13-check"
+                                            type="checkbox"
+                                            value="1"
+                                          />
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <a
+                                          href="#"
+                                          className="text-gray-900 fw-bold text-hover-primary fs-6"
+                                        >
+                                         { formatDate(item?.orderCreateDate)}
+                                        </a>
+                                      </td>
+                                      <td>
+                                        <a
+                                          href="#"
+                                          className="text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6"
+                                        >
+                                          {item?.orderNumber}
+                                        </a>
+                                      </td>
+                                      <td>
+                                        <a
+                                          href="#"
+                                          className="text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6"
+                                        >
+                                         {item?.customerName}
+                                        </a>
+                                        <span className="text-muted fw-semibold text-muted d-block fs-7">
+                                          Phone: {item?.mobileNumber}
+                                        </span>
+                                      </td>
+
+                                      <td>
+                                        <span className="badge badge-light-success">
+                                          {item?.orderStatus}
+                                        </span>
+                                      </td>
+                                      <td className="text-end">
+                                        <a
+                                        onClick={() => handleView(item)}
+                                          href="#"
+                                          className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                                        >
+                                          <KTIcon
+                                            iconName="switch"
+                                            className="fs-3"
+                                          />
+                                        </a>
+                                        <a
+                                          href="#"
+                                          className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+                                        >
+                                          <KTIcon
+                                            iconName="pencil"
+                                            className="fs-3"
+                                          />
+                                        </a>
+                                        <a
+                                          href="#"
+                                          className="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
+                                        >
+                                          <KTIcon
+                                            iconName="trash"
+                                            className="fs-3"
+                                          />
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </>
+                                ))}
                             </tbody>
                             {/* end::Table body */}
                           </table>
                           {/* end::Table */}
                         </div>
+                        {orderList?.length > 0 && pageCount && (
+                          <div className="d-flex justify-content-end ">
+                            <Pagination
+                              pagesCount={pageCount}
+                              setpage={setpage}
+                            ></Pagination>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
